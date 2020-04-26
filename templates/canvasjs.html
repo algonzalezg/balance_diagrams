@@ -1,0 +1,21 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}
+Canvas js
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+<script src="{{url_for('.static', filename='javascript/canvasTemplate.js')}}"></script>
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<html>
+<body>
+    <div id="chartContainer" style="height: 300px; width: 100%;"></div>
+    <button id="addPoint">Añadir punto</button>
+</body>
+</html>
+
+{% endblock %}

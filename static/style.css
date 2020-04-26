@@ -1,0 +1,70 @@
+.container {
+    border: 1px solid black;
+    width: 90vw;
+    padding-left: 5px;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: 95% 5%;
+    grid-template-rows: auto;
+    transition: 5000ms all;
+}
+
+.less {
+    height: 45px;
+    overflow: hidden;
+    transition: 5000ms all;
+}
+
+.more {
+    height: auto;
+    transition: 5000ms all;
+}
+
+.statement {
+    grid-area: 1 / 1 / 2 / 2;
+}
+
+.drop-down {
+    grid-area: 1 / 2 / 2 / 3;
+    display: grid;
+    grid-template-rows: auto;
+    grid-template-columns: auto;
+}
+
+.drop-down {
+    margin-top: 3px;
+}
+
+.vertical-more {
+    width: 2px;
+    height: 15px;
+    background-color: black;
+    grid-area: 1 / 2 / 1 / 2;
+    justify-self: center;
+    align-self: start;
+    transition: 500ms all;
+}
+
+.vertical-less {
+    width: 15px;
+    height: 2px;
+    background-color: black;
+    grid-area: 1 / 2 / 1 / 2;
+    justify-self: center;
+    align-self: start;
+    transition: 500ms all;
+    margin-top: 6px;
+}
+
+.horizontal {
+    width: 15px;
+    height: 2px;
+    background-color: black;
+    grid-area: 1 / 2 / 1 / 2;
+    justify-self: center;
+    align-self: start;
+    margin-top: 6px;
+}
+

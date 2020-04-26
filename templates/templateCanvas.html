@@ -1,0 +1,56 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}
+Template Canvas
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('.static', filename='style.css')}}">
+<script src="{{url_for('.static', filename='javascript/canvasTemplate.js')}}"></script>
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+</head>
+<body>
+    <div id="mydiv" data-diagrams='{{myval|tojson}}'></div>
+    <div class="container less" id="container">
+        <div class="statement">
+            <p>Ejercicio 1</p>
+            <p>{{myval[0].enunciado}}</p>
+        </div>
+        <div class="drop-down" id="btnDropDown">
+            <span class="vertical-more"></span>
+            <span class="horizontal"></span>
+        </div>
+    </div>
+
+    <div id="chartContainer" style="height: 300px; width: 50%;"></div>
+    <label for="xVal">Eje X:</label>
+    <input type="text" id="xVal" name="xVal"><br><br>
+    <label for="yVal">Eje Y:</label>
+    <input type="text" id="yVal" name="yVal"><br><br>
+    <button id="addPoint">Añadir punto</button>
+    <button id="ModPoint">Modificar punto</button>
+    <button id="checkPoints">Checkear Puntos</button>
+    <br><br>
+    <button id="addLine">Añadir Linea</button>
+    <button id="checkLines">Checkear Linea</button>
+    <br><br>
+    <button id="cleanLines">Borrar líneas</button><br>
+<!--    <label for="arr">Seleccione Linea: </label>-->
+<!--    <select id="arr" style="width: 100px;"></select><br>-->
+<!--    <label for="arr2">Seleccione Punto:</label>-->
+<!--    <select id="arr2" style="width: 100px;"></select><br>-->
+
+</body>
+</html>
+
+{% endblock %}

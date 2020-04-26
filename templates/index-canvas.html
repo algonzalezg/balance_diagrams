@@ -1,0 +1,63 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}
+index-canvas
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+<script src="{{url_for('.static', filename='javascript/canvas.js')}}"></script>
+{% endblock %}
+
+{% block content %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Canvas</title>
+
+    <style>
+        body {
+            background: #333;
+        }
+        #main {
+            margin-top: 100px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            width: 800px;
+            height: 600px;
+        }
+        .canvas {
+            height: 600px;
+            width: 800px;
+            left: 0;
+            top: 0;
+            position: absolute;
+            z-index: 1;
+        }
+        #canvas2 {
+            z-index: 2;
+        }
+    </style>
+</head>
+<body>
+    <div id="main">
+        <canvas id="canvas" class="canvas" width="800" height="600"></canvas>
+        <canvas id="canvas2" class="canvas" width="800" height="600"></canvas>
+    </div>
+</body>
+<script>
+
+var canvas1 = new Layer('canvas');
+var canvas2 = new Layer('canvas2');
+
+// canvas1.drawImage();
+canvas1.drawImage();
+canvas2.drawCircle();
+canvas1.drawLine();
+</script>
+</html>
+
+{% endblock %}
