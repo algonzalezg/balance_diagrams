@@ -3,9 +3,9 @@ window.onload = () => {
     var num_line = 0
     var num_point = 0
     var dt_dict = {}
-    var points = []
+    var points = Object.assign([], JSON.parse(localStorage.getItem('points')) || []);
     var dt = [{type:'line', dataPoints:[]}]
-    var lines = []
+    var lines = Object.assign([], JSON.parse(localStorage.getItem('lines')) || []);
     var dp = []
     var actual_line = 0
     var pointsChecked = false
@@ -16,7 +16,7 @@ window.onload = () => {
     var actual_diagram = 0
     var diagrams = JSON.parse(document.getElementById('mydiv').dataset.diagrams);
     var diagrams_points = diagrams[actual_diagram].lineas
-    var dataBackup = []
+    var dataBackup = Object.assign([], JSON.parse(localStorage.getItem('dataBackup')) || []);
     //var myval = {{myval}}
     //const linesMap = new MyMap()
     var selectPoints = document.getElementById("arr2");
@@ -39,33 +39,28 @@ window.onload = () => {
 
     chart.render();
 
+    const updateChartFromCache = () => {
+        if (lines.length > 0){
 
-    const getLines = () => {
-        let diagrams_lines = []
-        let num_line_aux = 0
-        let line_aux = []
-        for (var i = 0; i < diagrams_points.length; i++) {
-            if (diagrams_points[i].linea == num_line_aux){
-                delete diagrams_points[i]['linea']
-                line_aux.push(diagrams_points[i])
-            } else {
-                delete diagrams_points[i]['linea']
-                diagrams_lines.push(line_aux)
-                line_aux = []
-                line_aux.push(diagrams_points[i])
-                num_line_aux++
-            }
         }
-        diagrams_lines.push(line_aux)
-        return diagrams_lines
     }
 
-    var diagramsLines = getLines()
-
-    const onClickLine = (e) => {
-        alert(  e.dataSeries.type+ ", dataPoint { x:" + e.dataPoint.x + ", y: "+ e.dataPoint.y + " }" );
-    }
-
+//    const cleanLines = () => {
+//        let length_aux = 0
+//        if (num_point > 0){
+//            length_aux = dt.length
+//        }
+//        for (let i = 0; i < dataBackup.length; i++) {
+//            let newData = {type: dataBackup[i].type, click: dataBackup[i].click, dataPoints: dataBackup[i].dataPoints}
+//            dt.push(newData)
+//        }
+//        for (let j = 0; j < length_aux; j++) {
+//            lines.pop()
+//            chart.data[0].remove()
+//        }
+//        setTimeout(chart.render(), 2000)
+//        newLine = true
+//    }
 
     const onClick = (e) => {
         let index = 0
@@ -120,6 +115,57 @@ window.onload = () => {
 		//alert(  e.dataSeries.type + ", dataPoint { x:" + e.dataPoint.indexLabel + ", y: "+ e.dataPoint.y + " }" );
 	}
 
+
+    const cleanLines = () => {
+        let length_aux = dt.length
+        for (let i = 0; i < dataBackup.length; i++) {
+            let newData = {type: tp, click: onClick, dataPoints: [{x:dataBackup[i].x, y:dataBackup[i].y, indexLabel:dataBackup[i].indexLabel}]}
+            dt.push(newData)
+        }
+        for (let j = 0; j < length_aux; j++) {
+            lines.pop()
+            chart.data[0].remove()
+        }
+        setTimeout(chart.render(), 2000)
+        newLine = true
+    }
+
+    if (dataBackup.length > 0){
+        //updateChartFromCache()
+        pointsChecked = true
+        cleanLines();
+    }
+
+    const getLines = () => {
+        let diagrams_lines = []
+        let num_line_aux = 0
+        let line_aux = []
+        for (var i = 0; i < diagrams_points.length; i++) {
+            if (diagrams_points[i].linea == num_line_aux){
+                delete diagrams_points[i]['linea']
+                line_aux.push(diagrams_points[i])
+            } else {
+                delete diagrams_points[i]['linea']
+                diagrams_lines.push(line_aux)
+                line_aux = []
+                line_aux.push(diagrams_points[i])
+                num_line_aux++
+            }
+        }
+        diagrams_lines.push(line_aux)
+        return diagrams_lines
+    }
+
+    var diagramsLines = getLines()
+
+    const onClickLine = (e) => {
+        alert(  e.dataSeries.type+ ", dataPoint { x:" + e.dataPoint.x + ", y: "+ e.dataPoint.y + " }" );
+    }
+
+    const savePointsIntoCache = () => {
+        localStorage.setItem('dataBackup', JSON.stringify(points));
+    }
+
     const addNewLine = () => {
         newLine = true
     }
@@ -139,6 +185,7 @@ window.onload = () => {
         dt.push(newData)
         //dt_dict[num_point] = newData
         points = points.concat(dp)
+        //savePointsIntoCache()
         dp = []
         if (num_point == 0){
             chart.data[0].remove()
@@ -148,29 +195,33 @@ window.onload = () => {
     }
 
     const checkPoints = () => {
-        let diagramsPoints_aux = Object.assign([], diagrams_points)
-        pointsChecked = false
-        for (let i = 0; i < points.length; i++) {
-            pointsChecked = false
-            for (let j = 0; j < diagramsPoints_aux.length; j++) {
-                if ((points[i].x == diagramsPoints_aux[j].x) && (points[i].y == diagramsPoints_aux[j].y)){
-                    diagramsPoints_aux.splice(j,1)
-                    pointsChecked = true
+        if (!pointsChecked){
+            let diagramsPoints_aux = Object.assign([], diagrams_points)
+            for (let i = 0; i < points.length; i++) {
+                pointsChecked = false
+                for (let j = 0; j < diagramsPoints_aux.length; j++) {
+                    if ((points[i].x == diagramsPoints_aux[j].x) && (points[i].y == diagramsPoints_aux[j].y)){
+                        diagramsPoints_aux.splice(j,1)
+                        pointsChecked = true
+                    }
+                }
+                if (!pointsChecked){
+                    alert( "El punto x:"+ String(points[i].x) + ", y:"+ String(points[i].y) + " no es correcto" )
+                    diagramsPoints_aux = diagrams[actual_diagram].lineas
+                    break;
                 }
             }
-            if (!pointsChecked){
-                alert( "El punto x:"+ String(points[i].x) + ", y:"+ String(points[i].y) + " no es correcto" )
+            if (pointsChecked && diagramsPoints_aux.length > 0){
+                alert( "Faltan puntos por introducir." )
                 diagramsPoints_aux = diagrams[actual_diagram].lineas
-                break;
+            } else if (pointsChecked){
+                alert( "Todos los puntos añadidos son correctos. Añada las lineas." )
             }
+            dataBackup = Object.assign([],dt)
+            savePointsIntoCache()
+        }else{
+            alert("Los puntos ya han sido validados.")
         }
-        if (pointsChecked && diagramsPoints_aux.length > 0){
-            alert( "Faltan puntos por introducir." )
-            diagramsPoints_aux = diagrams[actual_diagram].lineas
-        } else if (pointsChecked){
-            alert( "Todos los puntos añadidos son correctos. Añada las lineas." )
-        }
-        dataBackup = Object.assign([],dt)
     }
 
     function objectEquals(x, y) {
@@ -190,6 +241,9 @@ window.onload = () => {
 
     }
 
+    const cleanCache = () => {
+        localStorage.setItem('dataBackup', JSON.stringify([]))
+    }
 
     const checkLines = () => {
         let diagramsLines_aux = Object.assign([], diagramsLines)
@@ -244,21 +298,6 @@ window.onload = () => {
         }
     }
 
-    const cleanLines = () => {
-        let length_aux = dt.length
-        for (let i = 0; i < dataBackup.length; i++) {
-           let newData = {type: dataBackup[i].type, click: dataBackup[i].click, dataPoints: dataBackup[i].dataPoints}
-            dt.push(newData)
-        }
-        chart.render()
-        for (let j = 0; j < length_aux; j++) {
-            lines.pop()
-            chart.data[0].remove()
-        }
-        setTimeout(chart.render(), 2000)
-        newLine = true
-    }
-
 
     btnDropDown.addEventListener('click', () => {
         const divVertical = btnDropDown.childNodes[1];
@@ -274,12 +313,14 @@ window.onload = () => {
         console.log(divVertical, nameStyle);
     })
 
+
     this.document.getElementById('addPoint').addEventListener('click', printNewPoint);
     this.document.getElementById('checkPoints').addEventListener('click', checkPoints);
     this.document.getElementById('addLine').addEventListener('click', addNewLine);
     this.document.getElementById('cleanLines').addEventListener('click', cleanLines);
     this.document.getElementById('checkLines').addEventListener('click', checkLines);
     this.document.getElementById('ModPoint').addEventListener('click', modifyPoint);
-    selectLines.addEventListener("change", changeComboPoints);
+    this.document.getElementById('BorrarCache').addEventListener('click', cleanCache);
+    //selectLines.addEventListener("change", changeComboPoints);
 
 }

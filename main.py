@@ -1,11 +1,14 @@
-from flask import Flask, render_template, redirect, url_for
+from functools import wraps
+
+from urllib3 import request
+
 from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField
 from wtforms.validators import InputRequired, Email, Length
 from flask_sqlalchemy  import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from flask import Flask, render_template, redirect, request, url_for, session
 import pyrebase
 import hashlib
 
@@ -26,22 +29,9 @@ auth = firebase.auth()
 app.config['SECRET_KEY'] = 'Thisissupposedtobesecret!'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////mnt/c/Users/antho/Documents/login-example/database.db'
 bootstrap = Bootstrap(app)
-login_manager = LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = 'login'
 token = ""
 db = firebase.database()
 
-class User(UserMixin):
-    def __init__(self, user_info):
-        id = user_info.get('idToken')
-        username = user_info.get('email').split('@')[0]
-        email = user_info.get('email')
-        password = user_info.get('password')
-
-@login_manager.user_loader
-def load_user(token):
-    return auth.get_account_info()
 
 class LoginForm(FlaskForm):
     username = StringField('username', validators=[InputRequired(), Length(min=4, max=100)])
@@ -52,6 +42,15 @@ class RegisterForm(FlaskForm):
     email = StringField('email', validators=[InputRequired(), Email(message='Invalid email'), Length(max=50)])
     password = PasswordField('password', validators=[InputRequired(), Length(min=8, max=80)])
 
+#decorator to protect routes
+def isAuthenticated(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        #check for the variable that pyrebase creates
+        if not auth.current_user != None:
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 @app.route('/')
 def index():
@@ -62,17 +61,18 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         print(form.password)
-        user = auth.sign_in_with_email_and_password(email=form.username.data, password=form.password.data)
-        if user.get("registered"):
-            token = user['idToken']
-            #login_user(user.get('token'))
-            #current_user = User.User(email=user.get('email'), token=user.get('token'))
-
-            return redirect(url_for('templatecanvas'))
-        else:
-            return '<h1>Invalid username or password</h1>'
-        #return '<h1>' + form.username.data + ' ' + form.password.data + '</h1>'
-
+        try:
+            user = auth.sign_in_with_email_and_password(email=form.username.data, password=form.password.data)
+            if user.get("registered"):
+                user_id = user['idToken']
+                user_email = user['email']
+                session['usr'] = user_id
+                session["email"] = user_email
+                return redirect(url_for('addDiagram'))
+            else:
+                return '<h1>Invalid username or password</h1>'
+        except:
+            return render_template("login.html", message="Wrong Credentials", form=form)
     return render_template('login.html', form=form)
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -88,8 +88,24 @@ def signup():
 
     return render_template('signup.html', form=form)
 
+@app.route('/addDiagram', methods=['GET', 'POST'])
+@isAuthenticated
+def addDiagram():
+    if request.method == "POST":
+        # get the request data
+        ejercicio = request.get_json()
+        try:
+            db.child("diagrams").child('ejercicio2').set(ejercicio)
+            return redirect("/")
+        except:
+            return render_template("addDiagram.html", message="Something wrong happened")
+
+
+    if (session['email'] == 'a.gonzalezgarci@gmail.com'):
+        return render_template('addDiagram.html')
+
 @app.route('/templatecanvas')
-#@login_required
+@isAuthenticated
 def templatecanvas():
     diagrams = list()
     diagrams_db = db.child("diagrams").get()
@@ -98,9 +114,10 @@ def templatecanvas():
     return render_template('templateCanvas.html', myval=diagrams)
 
 @app.route('/logout')
-@login_required
+@isAuthenticated
 def logout():
-    logout_user()
+    auth.current_user = None
+    session.clear()
     return redirect(url_for('index'))
 
 if __name__ == '__main__':

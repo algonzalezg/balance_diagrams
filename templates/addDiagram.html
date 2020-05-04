@@ -1,0 +1,52 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}
+Template Canvas
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('.static', filename='style.css')}}">
+<script src="{{url_for('.static', filename='javascript/addDiagram.js')}}"></script>
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<html lang="en">
+<head>
+
+</head>
+<body>
+    <div class="container less" id="container">
+        <textarea id="enunciado" rows="10" cols="50">
+            Escribe aqui el enunciado.
+        </textarea>
+
+        <div class="drop-down" id="btnDropDown">
+            <span class="vertical-more"></span>
+            <span class="horizontal"></span>
+        </div>
+    </div>
+    <button id="saveText">Guardar enunciado</button>
+
+    <div id="chartContainer" style="height: 300px; width: 50%;"></div>
+    <label for="xVal">Eje X:</label>
+    <input type="text" id="xVal" name="xVal"><br><br>
+    <label for="yVal">Eje Y:</label>
+    <input type="text" id="yVal" name="yVal"><br><br>
+    <button id="addPoint">Añadir punto</button>
+    <button id="modPoint">Modificar punto</button>
+    <button id="removePoint">Eliminar punto</button>
+    <br><br>
+    <button id="addLine">Añadir Linea</button>
+    <br><br>
+    <button id="submit">Añadir Ejercicio</button>
+<!--    <label for="arr">Seleccione Linea: </label>-->
+<!--    <select id="arr" style="width: 100px;"></select><br>-->
+<!--    <label for="arr2">Seleccione Punto:</label>-->
+<!--    <select id="arr2" style="width: 100px;"></select><br>-->
+
+</body>
+</html>
+
+{% endblock %}
