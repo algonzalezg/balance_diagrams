@@ -8,7 +8,7 @@ Template Canvas
 {{super()}}
 <link rel="stylesheet" href="{{url_for('.static', filename='style.css')}}">
 <script src="{{url_for('.static', filename='javascript/addDiagram.js')}}"></script>
-<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+<script src="{{url_for('.static', filename='javascript/canvasjs.min.js')}}"></script>
 {% endblock %}
 
 {% block content %}
@@ -17,35 +17,66 @@ Template Canvas
 
 </head>
 <body>
-    <div class="container less" id="container">
-        <textarea id="enunciado" rows="10" cols="50">
-            Escribe aqui el enunciado.
-        </textarea>
-
-        <div class="drop-down" id="btnDropDown">
-            <span class="vertical-more"></span>
-            <span class="horizontal"></span>
+<div class="parent-container">
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                        aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">Equilibrios App</a>
+            </div>
+            <div id="navbar" class="collapse navbar-collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="{{ url_for('index') }}">Home</a></li>
+                    <li><a href="{{ url_for('login') }}">Login</a></li>
+                    <li><a href="{{ url_for('signup') }}">Sign Up</a></li>
+                    <li><a href="{{ url_for('addDiagram') }}">Añadir ejercicio</a></li>
+                    <li><a href="{{ url_for('diagramSelection') }}">Realizar Ejercicio</a></li>
+                </ul>
+            </div><!--/.nav-collapse -->
         </div>
+    </nav>
+    <br>
+    <div class="user-container">
+        <div class="add-statement-container" id="container">
+            <div class="add-statement">
+                <textarea class="enunciado" id="enunciado" rows="8" cols="50">
+                    Escribe aqui el enunciado.
+                </textarea>
+            </div>
+            <button class="btn btn-primary btn-large save-statement" id="saveText">Guardar enunciado</button>
+        </div>
+        <div class="chartContainer" id="chartContainer"></div>
+        <div class="button-container">
+            <div class="button-points-container" id="buttonsPoints">
+                <div class="labels-container">
+                    <label for="xVal">Eje X:</label>
+                    <input type="text" id="xVal" name="xVal">
+                    <label for="yVal">Eje Y:</label>
+                    <input type="text" id="yVal" name="yVal">
+                </div>
+                <div class="custom-buttons-container">
+                    <button class="btn btn-primary btn-large" id="addPoint">Añadir punto</button>
+                    <button class="btn btn-primary btn-large" id="modPoint">Modificar punto</button>
+                    <button class="btn btn-primary btn-large" id="removePoint">Eliminar punto</button>
+                    <br><br>
+                    <button class="btn btn-primary btn-large" id="addLine">Añadir Linea</button>
+                    <br><br>
+                    <button class="btn btn-primary btn-large" id="submit">Añadir Ejercicio</button>
+                </div>
+            </div>
+        </div>
+        <!--    <label for="arr">Seleccione Linea: </label>-->
+        <!--    <select id="arr" style="width: 100px;"></select><br>-->
+        <!--    <label for="arr2">Seleccione Punto:</label>-->
+        <!--    <select id="arr2" style="width: 100px;"></select><br>-->
     </div>
-    <button id="saveText">Guardar enunciado</button>
-
-    <div id="chartContainer" style="height: 300px; width: 50%;"></div>
-    <label for="xVal">Eje X:</label>
-    <input type="text" id="xVal" name="xVal"><br><br>
-    <label for="yVal">Eje Y:</label>
-    <input type="text" id="yVal" name="yVal"><br><br>
-    <button id="addPoint">Añadir punto</button>
-    <button id="modPoint">Modificar punto</button>
-    <button id="removePoint">Eliminar punto</button>
-    <br><br>
-    <button id="addLine">Añadir Linea</button>
-    <br><br>
-    <button id="submit">Añadir Ejercicio</button>
-<!--    <label for="arr">Seleccione Linea: </label>-->
-<!--    <select id="arr" style="width: 100px;"></select><br>-->
-<!--    <label for="arr2">Seleccione Punto:</label>-->
-<!--    <select id="arr2" style="width: 100px;"></select><br>-->
-
+</div>
 </body>
 </html>
 

@@ -38,3 +38,34 @@ body {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
+
+.vertical-more {
+    width: 2px;
+    height: 15px;
+    background-color: black;
+    grid-area: 1 / 2 / 1 / 2;
+    justify-self: center;
+    align-self: start;
+    transition: 500ms all;
+}
+
+.vertical-less {
+    width: 15px;
+    height: 2px;
+    background-color: black;
+    grid-area: 1 / 2 / 1 / 2;
+    justify-self: center;
+    align-self: start;
+    transition: 500ms all;
+    margin-top: 6px;
+}
+
+.horizontal {
+    width: 15px;
+    height: 2px;
+    background-color: black;
+    grid-area: 1 / 2 / 1 / 2;
+    justify-self: center;
+    align-self: start;
+    margin-top: 6px;
+}

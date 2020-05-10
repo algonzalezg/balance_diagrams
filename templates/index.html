@@ -10,6 +10,7 @@ Demo App
 {% endblock %}
 
 {% block content %}
+    <div class="parent-container">
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
@@ -26,6 +27,8 @@ Demo App
             <li class="active"><a href="#">Home</a></li>
             <li><a href="{{ url_for('login') }}">Login</a></li>
             <li><a href="{{ url_for('signup') }}">Sign Up</a></li>
+            <li><a href="{{ url_for('addDiagram') }}">Añadir ejercicio</a></li>
+            <li><a href="{{ url_for('diagramSelection') }}">Realizar Ejercicio</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -38,5 +41,6 @@ Demo App
         <p class="lead">Realiza ejercicios sobre graficas.<br> Comprueba tu conocimiento sobre elementos.</p>
       </div>
 
+    </div>
     </div><!-- /.container -->
 {% endblock %}

@@ -1,16 +1,19 @@
 from functools import wraps
+from os import abort
 
+from jinja2 import TemplateNotFound
 from urllib3 import request
 
 from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField
+from wtforms import StringField, PasswordField, BooleanField, SelectField
 from wtforms.validators import InputRequired, Email, Length
 from flask_sqlalchemy  import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask import Flask, render_template, redirect, request, url_for, session
+from flask import Flask, render_template, redirect, request, url_for, session, g
 import pyrebase
 import hashlib
+import json
 
 app = Flask(__name__)
 
@@ -31,7 +34,12 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////mnt/c/Users/antho/Documents/
 bootstrap = Bootstrap(app)
 token = ""
 db = firebase.database()
-
+diagrams = {}
+diagram_list = []
+diagrams_db = db.child("diagrams").get()
+for diagram in diagrams_db.each():
+    diagram_list.append((diagram.val().get('material')))
+    diagrams[diagram.key()] = diagram.val()
 
 class LoginForm(FlaskForm):
     username = StringField('username', validators=[InputRequired(), Length(min=4, max=100)])
@@ -42,7 +50,11 @@ class RegisterForm(FlaskForm):
     email = StringField('email', validators=[InputRequired(), Email(message='Invalid email'), Length(max=50)])
     password = PasswordField('password', validators=[InputRequired(), Length(min=8, max=80)])
 
-#decorator to protect routes
+class SelectionForm(FlaskForm):
+    materiales = SelectField('materiales')
+
+
+
 def isAuthenticated(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -60,7 +72,6 @@ def index():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        print(form.password)
         try:
             user = auth.sign_in_with_email_and_password(email=form.username.data, password=form.password.data)
             if user.get("registered"):
@@ -68,7 +79,7 @@ def login():
                 user_email = user['email']
                 session['usr'] = user_id
                 session["email"] = user_email
-                return redirect(url_for('addDiagram'))
+                return redirect(url_for('diagramSelection'))
             else:
                 return '<h1>Invalid username or password</h1>'
         except:
@@ -99,19 +110,38 @@ def addDiagram():
             return redirect("/")
         except:
             return render_template("addDiagram.html", message="Something wrong happened")
-
-
     if (session['email'] == 'a.gonzalezgarci@gmail.com'):
         return render_template('addDiagram.html')
 
-@app.route('/templatecanvas')
+
+@app.route('/diagramSelection', methods=['GET', 'POST'])
 @isAuthenticated
+def diagramSelection():
+    form = SelectionForm()
+    form.materiales.choices = [(item, item) for item in diagram_list]
+    if request.method == "POST":
+        # get the request data
+        ejercicio = form.materiales.data
+        #ejercicio = ejercicio.split(',')[1].replace(')','').replace('\'','').strip()
+        for item in diagrams.items():
+            if item[1]['material'] == ejercicio:
+                g.diagram = item[1]
+                session['diagram'] = item[1]
+        #g.diagram = ejercicio
+        return redirect(url_for('templatecanvas'))
+        #return redirect(url_for('templatecanvas'))
+    else:
+        return render_template('diagramSelection.html', form=form)
+
+
+
+
+
+@app.route('/templatecanvas', methods=['GET', 'POST'])
 def templatecanvas():
-    diagrams = list()
-    diagrams_db = db.child("diagrams").get()
-    for diagram in diagrams_db.each():
-        diagrams.append(diagram.val())
-    return render_template('templateCanvas.html', myval=diagrams)
+    return render_template('templateCanvas.html', myval=session['diagram'])
+
+
 
 @app.route('/logout')
 @isAuthenticated

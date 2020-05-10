@@ -13,9 +13,8 @@ window.onload = () => {
     const btnDropDown = document.getElementById('btnDropDown');
     const statement = document.getElementById('container');
     //var geocode = JSON.parse(document.getElementById("mydiv").dataset.geocode);
-    var actual_diagram = 0
     var diagrams = JSON.parse(document.getElementById('mydiv').dataset.diagrams);
-    var diagrams_points = diagrams[actual_diagram].lineas
+    var diagrams_points = diagrams.lineas
     var dataBackup = Object.assign([], JSON.parse(localStorage.getItem('dataBackup')) || []);
     //var myval = {{myval}}
     //const linesMap = new MyMap()
@@ -61,6 +60,16 @@ window.onload = () => {
 //        setTimeout(chart.render(), 2000)
 //        newLine = true
 //    }
+
+    const hiddenButtonsPoints = () => {
+        const buttonsPoints = document.getElementById('buttonsPoints');
+        buttonsPoints.classList.add('hidde');
+    };
+
+    const showButtonsLines = () => {
+        const buttonsLines = document.getElementById('buttonsLines');
+        buttonsLines.classList.remove('hidde');
+    };
 
     const onClick = (e) => {
         let index = 0
@@ -134,6 +143,8 @@ window.onload = () => {
         //updateChartFromCache()
         pointsChecked = true
         cleanLines();
+        hiddenButtonsPoints();
+        showButtonsLines();
     }
 
     const getLines = () => {
@@ -174,24 +185,28 @@ window.onload = () => {
     const printNewPoint = () => {
         const xVal = parseInt(this.document.getElementById('xVal').value);
         const yVal = parseInt(this.document.getElementById('yVal').value);
-        dp = []
-        dp.push({
-            x: xVal,
-            y: yVal,
-            indexLabel: String(num_point)
-        });
-        tp = 'line'
-        let newData = {type: tp, click: onClick, dataPoints: dp}
-        dt.push(newData)
-        //dt_dict[num_point] = newData
-        points = points.concat(dp)
-        //savePointsIntoCache()
-        dp = []
-        if (num_point == 0){
-            chart.data[0].remove()
+        if (xVal == null || yVal == null){
+            alert(" Debes asignar un valor a ambos ejes para insertar un punto.")
+        }else{
+            dp = []
+            dp.push({
+                x: xVal,
+                y: yVal,
+                indexLabel: String(num_point)
+            });
+            tp = 'line'
+            let newData = {type: tp, click: onClick, dataPoints: dp}
+            dt.push(newData)
+            //dt_dict[num_point] = newData
+            points = points.concat(dp)
+            //savePointsIntoCache()
+            dp = []
+            if (num_point == 0){
+                chart.data[0].remove()
+            }
+            num_point++;
+            chart.render();
         }
-        num_point++;
-        chart.render();
     }
 
     const checkPoints = () => {
@@ -207,18 +222,20 @@ window.onload = () => {
                 }
                 if (!pointsChecked){
                     alert( "El punto x:"+ String(points[i].x) + ", y:"+ String(points[i].y) + " no es correcto" )
-                    diagramsPoints_aux = diagrams[actual_diagram].lineas
+                    diagramsPoints_aux = diagrams.lineas
                     break;
                 }
             }
             if (pointsChecked && diagramsPoints_aux.length > 0){
                 alert( "Faltan puntos por introducir." )
-                diagramsPoints_aux = diagrams[actual_diagram].lineas
+                diagramsPoints_aux = diagrams.lineas
             } else if (pointsChecked){
                 alert( "Todos los puntos añadidos son correctos. Añada las lineas." )
+                dataBackup = Object.assign([],dt)
+                savePointsIntoCache()
+                hiddenButtonsPoints();
+                showButtonsLines();
             }
-            dataBackup = Object.assign([],dt)
-            savePointsIntoCache()
         }else{
             alert("Los puntos ya han sido validados.")
         }
@@ -305,10 +322,10 @@ window.onload = () => {
         const isCurrentMore = nameStyle.indexOf('more') !== -1;
         if (isCurrentMore) {
             divVertical.className = 'vertical-less';
-            statement.className = 'container more';
+            statement.className = 'statement-container more';
         } else {
             divVertical.className = 'vertical-more';
-            statement.className = 'container less';
+            statement.className = 'statement-container less';
         }
         console.log(divVertical, nameStyle);
     })
