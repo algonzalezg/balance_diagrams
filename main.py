@@ -1,18 +1,11 @@
 from functools import wraps
-from os import abort
-
-from jinja2 import TemplateNotFound
 from urllib3 import request
-
 from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SelectField
 from wtforms.validators import InputRequired, Email, Length
-from flask_sqlalchemy  import SQLAlchemy
-from werkzeug.security import generate_password_hash, check_password_hash
 from flask import Flask, render_template, redirect, request, url_for, session, g
 import pyrebase
-import hashlib
 import json
 
 app = Flask(__name__)
@@ -30,7 +23,6 @@ firebaseConfig = {
 firebase = pyrebase.initialize_app(firebaseConfig)
 auth = firebase.auth()
 app.config['SECRET_KEY'] = 'Thisissupposedtobesecret!'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////mnt/c/Users/antho/Documents/login-example/database.db'
 bootstrap = Bootstrap(app)
 token = ""
 db = firebase.database()
@@ -58,7 +50,6 @@ class SelectionForm(FlaskForm):
 def isAuthenticated(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        #check for the variable that pyrebase creates
         if not auth.current_user != None:
             return redirect(url_for('login'))
         return f(*args, **kwargs)
@@ -79,7 +70,7 @@ def login():
                 user_email = user['email']
                 session['usr'] = user_id
                 session["email"] = user_email
-                return redirect(url_for('diagramSelection'))
+                return redirect(url_for('index'))
             else:
                 return '<h1>Invalid username or password</h1>'
         except:
@@ -95,8 +86,6 @@ def signup():
         auth.send_email_verification(login['idToken'])
 
         return '<h1>New user has been created!</h1>'
-        #return '<h1>' + form.username.data + ' ' + form.email.data + ' ' + form.password.data + '</h1>'
-
     return render_template('signup.html', form=form)
 
 @app.route('/addDiagram', methods=['GET', 'POST'])
@@ -105,9 +94,10 @@ def addDiagram():
     if request.method == "POST":
         # get the request data
         ejercicio = request.get_json()
+        name = 'ejercicio'+str(len(diagram_list)+1)
         try:
-            db.child("diagrams").child('ejercicio2').set(ejercicio)
-            return redirect("/")
+            db.child("diagrams").child(name).set(ejercicio)
+            return redirect("index")
         except:
             return render_template("addDiagram.html", message="Something wrong happened")
     if (session['email'] == 'a.gonzalezgarci@gmail.com'):
@@ -122,14 +112,11 @@ def diagramSelection():
     if request.method == "POST":
         # get the request data
         ejercicio = form.materiales.data
-        #ejercicio = ejercicio.split(',')[1].replace(')','').replace('\'','').strip()
         for item in diagrams.items():
             if item[1]['material'] == ejercicio:
                 g.diagram = item[1]
                 session['diagram'] = item[1]
-        #g.diagram = ejercicio
         return redirect(url_for('templatecanvas'))
-        #return redirect(url_for('templatecanvas'))
     else:
         return render_template('diagramSelection.html', form=form)
 

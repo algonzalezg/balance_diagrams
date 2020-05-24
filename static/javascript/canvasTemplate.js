@@ -27,11 +27,12 @@ window.onload = () => {
         title: {
             text: "Diagrama de Equilibrio"
         },
+        exportEnabled: true,
         axisX: {
-            title: "Axis X Title"
+            title: "T (ºC)"
         },
         axisY: {
-            title: "Units"
+            title: "% B"
         },
         data: dt
     });
@@ -314,6 +315,22 @@ window.onload = () => {
             chart.render()
         }
     }
+
+//    api.saveCanvas = function () {
+//        // Esto convierte el canvas en base64
+//        var result = canvas.toDataURL();
+//
+//        var link = document.createElement('a'),
+//            url = result,
+//            filename = 'plot_vacio_Tfg.png';
+//
+//        link.setAttribute('href', url);
+//        link.setAttribute('download', filename);
+//
+//        document.body.appendChild(link);
+//        link.click();
+//        document.body.removeChild(link);
+//    };
 
 
     btnDropDown.addEventListener('click', () => {

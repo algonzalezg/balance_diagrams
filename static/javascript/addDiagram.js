@@ -6,10 +6,7 @@ window.onload = () => {
     var lines = []
     var selectedPoint = {}
     var text = ''
-    //const linesMap = new MyMap()
-    //var selectPoints = document.getElementById("arr2");
-    //var selectLines = document.getElementById("arr");
-    //[{x: 1, y: 10}, {x: 2, y: 13}, {x: 3, y: 18}, {x: 4, y: 20}, {x: 5, y: 17},{x: 6, y: 10}, {x: 7, y: 13}, {x: 8, y: 18}, {x: 9, y: 20}, {x: 10, y: 17}];
+    var material = document.getElementById("material").value;
     var tp = "line"
     var chart = new CanvasJS.Chart("chartContainer", {
         title: {
@@ -96,6 +93,7 @@ window.onload = () => {
     }
 
     const saveText = () => {
+        material = this.document.getElementById("material").value;
         text = this.document.getElementById('enunciado').value
     }
 
@@ -128,17 +126,19 @@ window.onload = () => {
     }
 
     const submit = () => {
-            $.ajax({
-            type: "POST",
-            contentType: "application/json; charset=utf-8",
-            url: "http://127.0.0.1:5000/addDiagram",
-            data: JSON.stringify({'enunciado': text, 'lineas': lines}),
-            success: function (data) {
-            console.log(data.title);
-            console.log(data.article);
-            },
-            dataType: "json"
-        });
+        text = this.document.getElementById('enunciado').value
+        material = document.getElementById("material").value;
+        $.ajax({
+        type: "POST",
+        contentType: "application/json; charset=utf-8",
+        url: "http://127.0.0.1:5000/addDiagram",
+        data: JSON.stringify({'enunciado': text, 'lineas': lines, 'material': material}),
+        success: function (data) {
+        console.log(data.title);
+        console.log(data.article);
+        },
+        dataType: "json"
+    });
 
 
     }
@@ -150,7 +150,4 @@ window.onload = () => {
     this.document.getElementById('removePoint').addEventListener('click', removePoint);
     this.document.getElementById('saveText').addEventListener('click', saveText);
     this.document.getElementById('submit').addEventListener('click', submit);
-
-    //selectLines.addEventListener("change", changeComboPoints);
-
 }
