@@ -34,7 +34,7 @@ for diagram in diagrams_db.each():
     diagrams[diagram.key()] = diagram.val()
 
 class LoginForm(FlaskForm):
-    username = StringField('username', validators=[InputRequired(), Length(min=4, max=100)])
+    username = StringField('email', validators=[InputRequired(), Length(min=4, max=100)])
     password = PasswordField('password', validators=[InputRequired(), Length(min=8, max=80)])
     remember = BooleanField('remember me')
 

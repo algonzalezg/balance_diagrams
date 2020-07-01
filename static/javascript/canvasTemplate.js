@@ -12,16 +12,12 @@ window.onload = () => {
     var newLine = true
     const btnDropDown = document.getElementById('btnDropDown');
     const statement = document.getElementById('container');
-    //var geocode = JSON.parse(document.getElementById("mydiv").dataset.geocode);
     var diagrams = JSON.parse(document.getElementById('mydiv').dataset.diagrams);
     var diagrams_points = diagrams.lineas
     var dataBackup = Object.assign([], JSON.parse(localStorage.getItem('dataBackup')) || []);
-    //var myval = {{myval}}
-    //const linesMap = new MyMap()
     var selectPoints = document.getElementById("arr2");
     var selectLines = document.getElementById("arr");
     var selectedPoint = -1
-    //[{x: 1, y: 10}, {x: 2, y: 13}, {x: 3, y: 18}, {x: 4, y: 20}, {x: 5, y: 17},{x: 6, y: 10}, {x: 7, y: 13}, {x: 8, y: 18}, {x: 9, y: 20}, {x: 10, y: 17}];
     var tp = "line"
     var chart = new CanvasJS.Chart("chartContainer", {
         title: {
@@ -39,28 +35,6 @@ window.onload = () => {
 
     chart.render();
 
-    const updateChartFromCache = () => {
-        if (lines.length > 0){
-
-        }
-    }
-
-//    const cleanLines = () => {
-//        let length_aux = 0
-//        if (num_point > 0){
-//            length_aux = dt.length
-//        }
-//        for (let i = 0; i < dataBackup.length; i++) {
-//            let newData = {type: dataBackup[i].type, click: dataBackup[i].click, dataPoints: dataBackup[i].dataPoints}
-//            dt.push(newData)
-//        }
-//        for (let j = 0; j < length_aux; j++) {
-//            lines.pop()
-//            chart.data[0].remove()
-//        }
-//        setTimeout(chart.render(), 2000)
-//        newLine = true
-//    }
 
     const hiddenButtonsPoints = () => {
         const buttonsPoints = document.getElementById('buttonsPoints');
@@ -81,8 +55,6 @@ window.onload = () => {
            }
         }
         if (pointsChecked){
-            //delete dt[index]
-            //chart.data[index].remove()
             if (newLine) {
                 dp = []
                 dp.push({
@@ -120,9 +92,7 @@ window.onload = () => {
             selectedPoint = index
             chart.render();
 		}
-		//line.push()
-		//refreshChart()
-		//alert(  e.dataSeries.type + ", dataPoint { x:" + e.dataPoint.indexLabel + ", y: "+ e.dataPoint.y + " }" );
+
 	}
 
 
@@ -141,7 +111,6 @@ window.onload = () => {
     }
 
     if (dataBackup.length > 0){
-        //updateChartFromCache()
         pointsChecked = true
         cleanLines();
         hiddenButtonsPoints();
@@ -182,7 +151,6 @@ window.onload = () => {
         newLine = true
     }
 
-    // Para que lo veas mas claro el () => {} "equivale" a function() {}, es una forma que tiene js de declarar una funcion anonima. Y como en js se pueden meter funciones en varibles se aprovecha el meterlas en un const.
     const printNewPoint = () => {
         const xVal = parseInt(this.document.getElementById('xVal').value);
         const yVal = parseInt(this.document.getElementById('yVal').value);
@@ -198,9 +166,7 @@ window.onload = () => {
             tp = 'line'
             let newData = {type: tp, click: onClick, dataPoints: dp}
             dt.push(newData)
-            //dt_dict[num_point] = newData
             points = points.concat(dp)
-            //savePointsIntoCache()
             dp = []
             if (num_point == 0){
                 chart.data[0].remove()
@@ -288,6 +254,7 @@ window.onload = () => {
             msg = "Faltan lineas por introducir."
         } else if (linesChecked){
            msg = "Todos las lineas son correctas. Enhorabuena."
+           cleanCache()
         }
         alert(msg)
     }
@@ -316,22 +283,6 @@ window.onload = () => {
         }
     }
 
-//    api.saveCanvas = function () {
-//        // Esto convierte el canvas en base64
-//        var result = canvas.toDataURL();
-//
-//        var link = document.createElement('a'),
-//            url = result,
-//            filename = 'plot_vacio_Tfg.png';
-//
-//        link.setAttribute('href', url);
-//        link.setAttribute('download', filename);
-//
-//        document.body.appendChild(link);
-//        link.click();
-//        document.body.removeChild(link);
-//    };
-
 
     btnDropDown.addEventListener('click', () => {
         const divVertical = btnDropDown.childNodes[1];
@@ -354,7 +305,5 @@ window.onload = () => {
     this.document.getElementById('cleanLines').addEventListener('click', cleanLines);
     this.document.getElementById('checkLines').addEventListener('click', checkLines);
     this.document.getElementById('ModPoint').addEventListener('click', modifyPoint);
-    this.document.getElementById('BorrarCache').addEventListener('click', cleanCache);
-    //selectLines.addEventListener("change", changeComboPoints);
 
 }
