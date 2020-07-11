@@ -13,10 +13,10 @@ window.onload = () => {
             text: "Diagrama de Equilibrio"
         },
         axisX: {
-            title: "Axis X Title"
+            title: "T (ºC)"
         },
         axisY: {
-            title: "Units"
+            title: "% B"
         },
         data: dt
     });
@@ -139,8 +139,7 @@ window.onload = () => {
         },
         dataType: "json"
     });
-
-
+    alert(" Se ha introducido correctamente el ejercicio.")
     }
 
 

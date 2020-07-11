@@ -100,7 +100,7 @@ def addDiagram():
             return redirect("index")
         except:
             return render_template("addDiagram.html", message="Something wrong happened")
-    if (session['email'] == 'a.gonzalezgarci@gmail.com'):
+    if (session['email'] == 'diagramasdeequilibrio@gmail.com'):
         return render_template('addDiagram.html')
 
 
